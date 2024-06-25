@@ -706,6 +706,31 @@ require('lazy').setup({
       --  into multiple repos for maintenance purposes.
       'hrsh7th/cmp-nvim-lsp',
       'hrsh7th/cmp-path',
+
+      -- copilot cmp source, aki
+      {
+        'zbirenbaum/copilot-cmp',
+        dependencies = 'copilot.lua',
+        opts = {},
+        config = function(_, opts)
+          local copilot_cmp = require 'copilot_cmp'
+          copilot_cmp.setup(opts)
+          -- attach cmp source whenever copilot attaches
+          -- fixes lazy-loading issues with the copilot cmp source
+          local on_attach = function(client, _)
+            if client.name == 'copilot' then
+              copilot_cmp._on_insert_enter {}
+            end
+          end
+          vim.api.nvim_create_autocmd('LspAttach', {
+            callback = function(args)
+              local buffer = args.buf ---@type number
+              local client = vim.lsp.get_client_by_id(args.data.client_id)
+              on_attach(client, buffer)
+            end,
+          })
+        end,
+      },
     },
     config = function()
       -- See `:help cmp`
@@ -738,7 +763,7 @@ require('lazy').setup({
           -- Accept ([y]es) the completion.
           --  This will auto-import if your LSP supports it.
           --  This will expand snippets if the LSP sent a snippet.
-          ['<C-y>'] = cmp.mapping.confirm { select = true },
+          ['<C-m>'] = cmp.mapping.confirm { select = true },
 
           -- If you prefer more traditional completion keymaps,
           -- you can uncomment the following lines
@@ -777,6 +802,7 @@ require('lazy').setup({
           { name = 'nvim_lsp' },
           { name = 'luasnip' },
           { name = 'path' },
+          { name = 'copilot', group_index = 1, priority = 100 },
         },
       }
     end,
@@ -894,14 +920,14 @@ require('lazy').setup({
   --
   --  Uncomment the following line and add your plugins to `lua/custom/plugins/*.lua` to get going.
   --    For additional information, see `:help lazy.nvim-lazy.nvim-structuring-your-plugins`
-  -- { import = 'custom.plugins' },
+  { import = 'custom.plugins' },
   {
     'melbaldove/llm.nvim',
     dependencies = { 'nvim-neotest/nvim-nio' },
     config = function()
       -- Manually configure the services
       local system_prompt =
-        'You should replace the code that you are sent, only following the comments. Do not talk at all. Only output valid code. Do not provide any backticks that surround the code. Never ever output backticks like this ```. Any comment that is asking you for something should be removed after you satisfy them. Other comments should left alone. Do not output backticks'
+        'You should replace the code that you are sent, only following the comments. Do not talk at all. Only output valid code. Do not provide any backticks that surround the code. Never ever output backticks like this ```. Any comment that is asking you for something should be removed after you satisfy them. Other comments should left alone. Do NOT output backticks. ONLY output valid code. Do NOT output backticks.'
       local helpful_prompt = 'You are a helpful assistant. What I have sent are my notes so far. You are very curt, yet helpful.'
       require('llm').setup {
         timeout_ms = 3000,
