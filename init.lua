@@ -9,8 +9,7 @@
 ========         ||                    ||   | === |          ========
 ========         ||   KICKSTART.NVIM   ||   |-----|          ========
 ========         ||                    ||   | === |          ========
-========         ||                    ||   |-----|          ========
-========         ||:Tutor              ||   |:::::|          ========
+========         ||                    ||   |-----|          ======== ========         ||:Tutor              ||   |:::::|          ========
 ========         |'-..................-'|   |____o|          ========
 ========         `"")----------------(""`   ___________      ========
 ========        /::::::::::|  |::::::::::\  \ no mouse \     ========
@@ -109,6 +108,12 @@ vim.opt.mouse = 'a'
 
 -- Don't show the mode, since it's already in the status line
 vim.opt.showmode = false
+
+vim.opt.tabstop = 4
+vim.opt.softtabstop = 4
+vim.opt.shiftwidth = 4
+vim.opt.expandtab = true
+vim.opt.smartindent = true
 
 -- Sync clipboard between OS and Neovim.
 --  Remove this option if you want your OS clipboard to remain independent.
@@ -924,6 +929,7 @@ require('lazy').setup({
   {
     'melbaldove/llm.nvim',
     dependencies = { 'nvim-neotest/nvim-nio' },
+    commit = '09bdfad4a76dff82ced2a10095552eba4885d6bd',
     config = function()
       -- Manually configure the services
       local system_prompt =
@@ -948,7 +954,7 @@ require('lazy').setup({
       }
 
       vim.keymap.set({ 'n', 'v' }, '<leader>K', function()
-        require('llm').prompt { replace = false, service = 'anthropic_help' }
+        require('llm').prompt { replace = true, service = 'anthropic_help' }
       end, { desc = 'llm anthropic_help' })
 
       vim.keymap.set({ 'n', 'v' }, '<leader>k', function()
