@@ -931,7 +931,6 @@ require('lazy').setup({
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
       local dingllm = require 'dingllm'
-      dingllm.setup()
 
       local system_prompt =
         'You should replace the code that you are sent, only following the comments. Do not talk at all. Only output valid code. Do not provide any backticks that surround the code. Never ever output backticks like this ```. Any comment that is asking you for something should be removed after you satisfy them. Other comments should left alone. Do not output backticks and do not output any comments that is not comments.'
